@@ -224,6 +224,13 @@ Full procedure: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## 10. Build history (2026-11-02, newest first)
 
+- **Hero slider rebuilt (bug fix):** the slider shipped with no layout CSS at all — pictures
+  rendered at natural 750px and all 10 slides stacked, cropped on phones. Added the full
+  slider stylesheet to both stylesheets: one slide at a time (`display:none` except
+  `.is-active`), picture fills the container (`width:100%`, full picture visible, no
+  crop), caption overlaid bottom-left, arrows centred on the picture, dots styled on
+  desktop, counter on phones. Story image bleed fixed at source (`right:-8px` → `0`,
+  RTL mirrored). Code template re-synced to the live script byte-for-byte.
 - **Clean-page guard:** `html,body{overflow-x:clip}` added to the compiled stylesheet (clip,
   not hidden, so the sticky header keeps working) — no element can ever widen the page
   sideways; the sticky header, fixed mobile bar, and inner horizontal scrollers are

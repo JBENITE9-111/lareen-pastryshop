@@ -52,13 +52,13 @@ html[dir="rtl"] .hero-next{right:auto;left:12px}
 html[dir="rtl"] .cat-rail-prev{left:auto;right:6px}
 html[dir="rtl"] .cat-rail-next{right:auto;left:6px}
 html[dir="rtl"] .gift-feature .btn{left:auto;right:20px}
-html[dir="rtl"] .story-imgs .story-img-small{right:auto;left:-8px}
+html[dir="rtl"] .story-imgs .story-img-small{right:auto;left:0}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .tile-wide{aspect-ratio:16/9}
 .story-row{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center}
 .story-imgs{position:relative}
 .story-imgs img{width:100%;border-radius:16px;display:block}
-.story-imgs .story-img-small{width:58%;position:absolute;right:-8px;bottom:-18px;border:3px solid #fff;box-shadow:0 8px 24px rgba(43,33,28,.18)}
+.story-imgs .story-img-small{width:58%;position:absolute;right:0;bottom:-18px;border:3px solid #fff;box-shadow:0 8px 24px rgba(43,33,28,.18)}
 @media(max-width:700px){
   .story-row{grid-template-columns:1fr}
   .story-imgs{margin-top:8px;padding-bottom:14px}
@@ -74,3 +74,14 @@ html[dir="rtl"] .story-imgs .story-img-small{right:auto;left:-8px}
 
 /* Clean-page guard: never let any element widen the page sideways (clip, not hidden, so the sticky header keeps working) */
 html,body{overflow-x:clip}
+/* Slider fix 2026-11-02: one slide at a time, sized images, positioned caption/arrows/dots */
+.hero-slider{position:relative;max-width:720px;margin:0 auto}
+.hero-track{position:relative}
+.hero-slide{display:none;width:100%}
+.hero-slide.is-active{display:block}
+.hero-slide .hero-img{display:block;width:100%;height:auto}
+.hero-cap{position:absolute;left:14px;bottom:14px;background:#2B211C;color:#F7F3EC;padding:8px 14px;border-radius:999px;font-weight:700}
+.hero-prev,.hero-next{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:#fff;color:#2B211C;border:1px solid #E8DFD3;font-size:24px;line-height:1;cursor:pointer;z-index:2}
+.hero-prev{left:12px}
+.hero-next{right:12px}
+@media(min-width:701px){.hero-dots{display:flex;gap:8px;justify-content:center;margin-top:12px}.hero-dots button{background:none;border:0;padding:6px;cursor:pointer}.hero-dots button i{display:block;width:10px;height:10px;border-radius:50%;background:#D8CDBF}.hero-dots button[aria-current="true"] i{background:#B99B70}}
