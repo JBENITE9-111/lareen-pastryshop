@@ -272,8 +272,8 @@
   (function(){
     var navlinks = document.querySelector('.navlinks');
     if (navlinks && !document.getElementById('lareen-header-bag')) {
-      var bagA = document.createElement('a'); bagA.href = '/bag'; bagA.id = 'lareen-header-bag';
-      bagA.innerHTML = '<span data-en="Bag" data-ar="الحقيبة">Bag</span> (<span id="lareen-header-bag-count">0</span>)';
+      var bagA = document.createElement('a'); bagA.href = '/bag'; bagA.id = 'lareen-header-bag'; bagA.className = 'nav-sign';
+      bagA.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 12.2a1.5 1.5 0 0 1-1.5 1.3H7.7a1.5 1.5 0 0 1-1.5-1.3L5 8z"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></svg><span data-en="Bag" data-ar="الحقيبة">Bag</span> (<span id="lareen-header-bag-count">0</span>)';
       navlinks.appendChild(bagA);
     }
     updateBagBadges();
