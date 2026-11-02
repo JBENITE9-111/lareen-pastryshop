@@ -1,0 +1,92 @@
+[
+  {
+    "index": 1,
+    "name": "Mixed Arabic Sweets",
+    "slug": "mixed-arabic-sweets",
+    "link": "https://lareen-pastryshop.vercel.app/products/mixed-arabic-sweets",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_01_mixed-arabic-sweets.txt",
+    "file": "assets/lareen/video/hero-01-mixed-arabic-sweets-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 2,
+    "name": "Eid Box",
+    "slug": "eid-box",
+    "link": "https://lareen-pastryshop.vercel.app/products/eid-box",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_02_eid-box.txt",
+    "file": "assets/lareen/video/hero-02-eid-box-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 3,
+    "name": "Special Chocolate Cake",
+    "slug": "special-chocolate-cake",
+    "link": "https://lareen-pastryshop.vercel.app/products/special-chocolate-cake",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_03_special-chocolate-cake.txt",
+    "file": "assets/lareen/video/hero-03-special-chocolate-cake-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 4,
+    "name": "Tiramisu Full Cake",
+    "slug": "tiramisu-full-cake",
+    "link": "https://lareen-pastryshop.vercel.app/products/tiramisu-full-cake",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_04_tiramisu-full-cake.txt",
+    "file": "assets/lareen/video/hero-04-tiramisu-full-cake-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 5,
+    "name": "Mixed Baklawa Box",
+    "slug": "mixed-baklawa-box",
+    "link": "https://lareen-pastryshop.vercel.app/products/mixed-baklawa-box",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_05_mixed-baklawa-box.txt",
+    "file": "assets/lareen/video/hero-05-mixed-baklawa-box-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 6,
+    "name": "Pistachio Baklawa",
+    "slug": "pistachio-baklawa",
+    "link": "https://lareen-pastryshop.vercel.app/products/pistachio-baklawa",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_06_pistachio-baklawa.txt",
+    "file": "assets/lareen/video/hero-06-pistachio-baklawa-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 7,
+    "name": "Mango Kunafa",
+    "slug": "mango-kunafa",
+    "link": "https://lareen-pastryshop.vercel.app/products/mango-kunafa",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_07_mango-kunafa.txt",
+    "file": "assets/lareen/video/hero-07-mango-kunafa-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 8,
+    "name": "Lotus Cheesecake Cake",
+    "slug": "lotus-cheesecake-cake",
+    "link": "https://lareen-pastryshop.vercel.app/products/lotus-cheesecake-cake",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_08_lotus-cheesecake-cake.txt",
+    "file": "assets/lareen/video/hero-08-lotus-cheesecake-cake-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 9,
+    "name": "Red Velvet Cake",
+    "slug": "red-velvet-cake",
+    "link": "https://lareen-pastryshop.vercel.app/products/red-velvet-cake",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_09_red-velvet-cake.txt",
+    "file": "assets/lareen/video/hero-09-red-velvet-cake-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  },
+  {
+    "index": 10,
+    "name": "Circle Chocolate Gift Tray",
+    "slug": "circle-chocolate-gift-tray",
+    "link": "https://lareen-pastryshop.vercel.app/products/circle-chocolate-gift-tray",
+    "prompt": "VIDEOS_EXACT_PROMPTS/HERO_10_circle-chocolate-gift-tray.txt",
+    "file": "assets/lareen/video/hero-10-circle-chocolate-gift-tray-16x9.mp4",
+    "status": "OPTIONAL - GENERATE ONLY AFTER 6 MASTER FILM SHOTS PASS QA"
+  }
+]
