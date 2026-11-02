@@ -12,9 +12,17 @@ The live site is a static deployment: no server code, no environment variables c
 
 Redeploy the previous production deployment from the Vercel dashboard (or recreate it from the same file set). Recent production deployments, newest first:
 
+- `dpl_47vAqar14SKSpMYfHmE89YhknxxD` — V3 motion spec, reveal 12 px (current, 2026-11-02)
 - `dpl_4g6aDfKHpJZFeuoYqBuHPYMD2MwT` — bag buttons on all cards (2026-11-02)
 - `dpl_CaAKb8dSzbukHXiUFxQTkkCh8yPL` — V2 luxury motion + icon buttons (2026-11-02)
 - `dpl_B5z4HbPYtq157KkFcnczXUEKCRZQ` — category rail (2026-11-02)
+
+## Repo discipline (standing)
+
+Every change made to this tree must be pushed into the repo — no change stays local-only. A
+deploy without its matching push is an unfinished change. Text files go through the snapshot
+push; binary images go through the web upload or are reconstructed with
+`tools/fetch-assets.sh` (never claim images are in the repo when only the manifest is).
 
 ## Git deploys (not enabled)
 
