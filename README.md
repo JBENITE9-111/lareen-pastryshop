@@ -224,6 +224,10 @@ Full procedure: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## 10. Build history (2026-11-02, newest first)
 
+- **Minimalist mobile bar:** the phone-only order bar rebuilt as one slim dark pill — official
+  WhatsApp logo + Bag (outline icon, count badge only when the bag is non-empty) + Call
+  (phone icon), 52 px touch targets, safe-area padding; the old mismatched gold/white boxes
+  and wrapping "Order on WhatsApp" text are gone.
 - **V3 motion spec:** reveal distance 14 px → 12 px in the compiled stylesheet (the only file
   changed); the site already complied with the rest of V3 §5.
 - **Bag buttons everywhere:** 555 Add-to-bag buttons (shop 78, search 78, collections 111,
