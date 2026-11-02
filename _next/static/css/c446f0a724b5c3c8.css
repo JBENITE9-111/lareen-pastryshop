@@ -71,3 +71,6 @@ html[dir="rtl"] .story-imgs .story-img-small{right:auto;left:-8px}
 @media(prefers-reduced-motion:reduce){
   [data-motion-ready="true"] [data-reveal]{opacity:1!important;transform:none!important;transition:none!important}
 }
+
+/* Clean-page guard: never let any element widen the page sideways (clip, not hidden, so the sticky header keeps working) */
+html,body{overflow-x:clip}

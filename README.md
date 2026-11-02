@@ -224,6 +224,10 @@ Full procedure: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## 10. Build history (2026-11-02, newest first)
 
+- **Clean-page guard:** `html,body{overflow-x:clip}` added to the compiled stylesheet (clip,
+  not hidden, so the sticky header keeps working) — no element can ever widen the page
+  sideways; the sticky header, fixed mobile bar, and inner horizontal scrollers are
+  unaffected.
 - **Minimalist mobile bar:** the phone-only order bar rebuilt as one slim dark pill — official
   WhatsApp logo + Bag (outline icon, count badge only when the bag is non-empty) + Call
   (phone icon), 52 px touch targets, safe-area padding; the old mismatched gold/white boxes
