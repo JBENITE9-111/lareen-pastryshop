@@ -85,4 +85,4 @@ html,body{overflow-x:clip}
 .hero-prev{left:12px}
 .hero-next{right:12px}
 @media(min-width:701px){.hero-dots{display:flex;gap:8px;justify-content:center;margin-top:12px}.hero-dots button{background:none;border:0;padding:6px;cursor:pointer}.hero-dots button i{display:block;width:10px;height:10px;border-radius:50%;background:#D8CDBF}.hero-dots button[aria-current="true"] i{background:#B99B70}}
-@media(min-width:701px){.nav{gap:20px}.navlinks{flex:1 1 auto;justify-content:flex-end;margin-inline-start:0;-webkit-margin-start:0;gap:20px}.navlinks a.nav-sign{padding:7px 12px}header.site .btn.gold{padding:11px 18px}.header-actions{display:flex;gap:12px;align-items:center;margin-inline-start:auto}}
+@media(min-width:701px){.nav{gap:20px}.navlinks{flex:1 1 auto;justify-content:flex-end;margin-inline-start:0;-webkit-margin-start:0;gap:20px}.navlinks a.nav-sign{padding:7px 12px}header.site .btn.gold{padding:11px 18px}.header-actions{display:flex;gap:12px;align-items:center;margin-inline-start:auto}}.order-pills .btn{display:inline-flex;align-items:center;gap:9px}.order-pills .btn img{height:22px;width:auto;flex:none}
