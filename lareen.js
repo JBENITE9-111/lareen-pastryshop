@@ -11,28 +11,28 @@
   var bySlug = {}; PRODUCTS.forEach(function(p){ bySlug[p.slug]=p; });
 
 
-  /* ---------- Pagination: 10 products per page, everywhere products are listed ---------- */
+  /* ---------- Pagination: 12 products per page, everywhere products are listed ---------- */
   var PAGE_SIZE = 12;
   function scrollToGrid(cards){ var g = cards.length && cards[0].parentElement; if (!g) return; var hdr = document.querySelector('header.site'); var off = (hdr ? hdr.offsetHeight : 80) + 12; var top = g.getBoundingClientRect().top + window.scrollY - off; window.scrollTo({top: top < 0 ? 0 : top, behavior: 'smooth'}); }
   function makePager(anchor){
     var nav = document.getElementById('lareen-pager');
-    if (!nav) { nav = document.createElement('nav'); nav.id = 'lareen-pager'; nav.className = 'lareen-pager'; nav.setAttribute('aria-label','Product pages'); anchor.after(nav); }
+    if (!nav) { nav = document.createElement('nav'); nav.id = 'lareen-pager'; nav.className = 'lareen-pager'; nav.setAttribute('data-aria-en','Product pages'); nav.setAttribute('data-aria-ar','صفحات المنتجات'); nav.setAttribute('aria-label', curLang()==='ar' ? 'صفحات المنتجات' : 'Product pages'); anchor.after(nav); }
     return nav;
   }
   function renderPager(nav, totalPages, page, onPage){
     if (totalPages <= 1) { nav.style.display = 'none'; nav.innerHTML = ''; return; }
     nav.style.display = 'flex'; nav.innerHTML = '';
     function btn(label, p, disabled, current){
-      var b = document.createElement('button'); b.type = 'button'; b.textContent = label;
+      var b = document.createElement('button'); b.type = 'button'; b.innerHTML = label;
       if (disabled) b.disabled = true;
       if (current) b.setAttribute('aria-current','page');
       b.addEventListener('click', function(){ onPage(p); });
       nav.appendChild(b);
     }
-    btn('\u2039 Prev', page - 1, page <= 1, false);
+    btn(L('\u2039 Prev', 'السابق \u203a'), page - 1, page <= 1, false);
     for (var p = 1; p <= totalPages; p++) btn(String(p), p, false, p === page);
-    btn('Next \u203a', page + 1, page >= totalPages, false);
-    var info = document.createElement('span'); info.className = 'lareen-pager-info'; info.textContent = 'Page ' + page + ' of ' + totalPages; nav.appendChild(info);
+    btn(L('Next \u203a', '\u2039 التالي'), page + 1, page >= totalPages, false);
+    var info = document.createElement('span'); info.className = 'lareen-pager-info'; info.innerHTML = L('Page ' + page + ' of ' + totalPages, 'صفحة ' + page + ' من ' + totalPages); nav.appendChild(info);
   }
   /* ---------- Shop filters ---------- */
   var catSel = document.getElementById('cat');
@@ -40,7 +40,8 @@
     var typSel = document.getElementById('typ');
     var minEl = document.getElementById('min');
     var maxEl = document.getElementById('max');
-    var featEl = document.querySelector('input[type="checkbox"]');
+    var featEl = document.getElementById('feat');
+    var incEnqEl = document.getElementById('inc-enq');
     var sortSel = document.getElementById('sort');
     var cards = Array.prototype.slice.call(document.querySelectorAll('article.card, a.card'));
     var countP = null;
@@ -62,6 +63,7 @@
         if (typ==='fixed' && p.price_status!=='approved_fixed') return false;
         if (typ==='enquiry' && p.price_status!=='enquiry') return false;
         if (feat && !p.featured) return false;
+        if ((minv!=null || maxv!=null) && typ!=='enquiry' && !(incEnqEl && incEnqEl.checked) && p.price_status!=='approved_fixed') return false;
         if (p.price_status==='approved_fixed' && p.price_aed_minor!=null) {
           if (minv!=null && p.price_aed_minor < minv*100) return false;
           if (maxv!=null && p.price_aed_minor > maxv*100) return false;
@@ -93,12 +95,12 @@
       var pageCards = list.slice(start, end);
       var gridEl = pageCards.length ? pageCards[0].parentElement : null;
       if (gridEl) pageCards.forEach(function(card){ gridEl.appendChild(card); });
-      if (countP) countP.textContent = total === 0 ? 'No products match these filters.' : ('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' products.');
+      if (countP) countP.innerHTML = total === 0 ? L('No products match these filters.', 'لا توجد منتجات مطابقة لهذه المرشحات.') : L('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' products.', 'عرض ' + (start + 1) + '\u2013' + end + ' من أصل ' + total + ' منتجًا.');
       var nm = document.getElementById('lareen-no-match'); if (nm) nm.style.display = 'none';
       if (!shopPager && cards.length) shopPager = makePager(cards[0].parentElement);
       if (shopPager) renderPager(shopPager, pages, shopPage, function(p){ shopPage = p; renderShop(); scrollToGrid(cards); });
     }
-    [catSel, typSel, minEl, maxEl, featEl, sortSel].forEach(function(el){ if(el) el.addEventListener('input', function(){ shopPage = 1; renderShop(); }); if(el) el.addEventListener('change', function(){ shopPage = 1; renderShop(); }); });
+    [catSel, typSel, minEl, maxEl, featEl, incEnqEl, sortSel].forEach(function(el){ if(el) el.addEventListener('input', function(){ shopPage = 1; renderShop(); }); if(el) el.addEventListener('change', function(){ shopPage = 1; renderShop(); }); });
     renderShop();
   }
 
@@ -126,7 +128,7 @@
       var visible = {};
       list.slice(start, end).forEach(function(card){ visible[(card.querySelector('a')||card).getAttribute('href')] = true; });
       scards.forEach(function(card){ card.style.display = visible[(card.querySelector('a')||card).getAttribute('href')] ? '' : 'none'; });
-      if (sCount) sCount.textContent = total === 0 ? 'No results.' : (nq ? ('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' results.') : ('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' products.'));
+      if (sCount) sCount.innerHTML = total === 0 ? L('No results.', 'لا توجد نتائج.') : (nq ? L('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' results.', 'عرض ' + (start + 1) + '\u2013' + end + ' من أصل ' + total + ' نتيجة.') : L('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' products.', 'عرض ' + (start + 1) + '\u2013' + end + ' من أصل ' + total + ' منتجًا.'));
       if (!searchPager && scards.length) searchPager = makePager(scards[0].parentElement);
       if (searchPager) renderPager(searchPager, pages, searchPage, function(p){ searchPage = p; renderSearch(); scrollToGrid(scards); });
     }
@@ -134,7 +136,7 @@
     renderSearch();
   }
 
-  /* ---------- Collections & occasions: same 10-per-page rule ---------- */
+  /* ---------- Collections & occasions: same 12-per-page rule ---------- */
   (function(){
     var path = window.location.pathname.replace(/\.html$/,'');
     if (path.indexOf('/collections/') !== 0 && path.indexOf('/occasions/') !== 0) return;
@@ -148,7 +150,7 @@
       if (cPage < 1) cPage = 1;
       var start = (cPage - 1) * PAGE_SIZE, end = Math.min(total, start + PAGE_SIZE);
       if (!cCount) { cCount = document.createElement('p'); cCount.id = 'lareen-page-count'; ccards[0].parentElement.before(cCount); }
-      cCount.textContent = 'Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' products.';
+      cCount.innerHTML = L('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' products.', 'عرض ' + (start + 1) + '\u2013' + end + ' من أصل ' + total + ' منتجًا.');
       ccards.forEach(function(card, i){ card.style.display = (i >= start && i < end) ? '' : 'none'; });
       if (!cPager) cPager = makePager(ccards[0].parentElement);
       renderPager(cPager, pages, cPage, function(p){ cPage = p; renderCollection(); scrollToGrid(ccards); });
@@ -180,7 +182,7 @@
     });
     var touchX = null;
     heroSlider.addEventListener('touchstart', function(e){ touchX = e.changedTouches[0].clientX; clearInterval(heroTimer); }, {passive:true});
-    heroSlider.addEventListener('touchend', function(e){ if (touchX === null) return; var dx = e.changedTouches[0].clientX - touchX; if (Math.abs(dx) > 40) heroGo(heroCur + (dx < 0 ? 1 : -1)); touchX = null; heroAuto(); }, {passive:true});
+    heroSlider.addEventListener('touchend', function(e){ if (touchX === null) return; var dx = e.changedTouches[0].clientX - touchX; if (Math.abs(dx) > 40) { var rtl = document.documentElement.dir === 'rtl'; heroGo(heroCur + (dx < 0 ? (rtl ? -1 : 1) : (rtl ? 1 : -1))); } touchX = null; heroAuto(); }, {passive:true});
     heroSlider.addEventListener('mouseenter', function(){ clearInterval(heroTimer); });
     heroSlider.addEventListener('mouseleave', heroAuto);
     heroAuto();
@@ -208,6 +210,7 @@
     live.textContent = ar ? ('تمت إضافة ' + name + ' إلى حقيبتك.') : ('Added ' + name + ' to your bag.');
   }
   function bagAdd(slug, qty){
+    qty = Math.max(1, Math.min(99, parseInt(qty, 10) || 1));
     var bag = getBag(); var it = null;
     bag.forEach(function(x){ if (x.slug === slug) it = x; });
     if (it) it.qty += qty; else bag.push({slug: slug, qty: qty});
@@ -225,7 +228,7 @@
       var priceTxt = '';
       if (pr.price_status === 'approved_fixed' && pr.price_aed_minor != null) { priceTxt = ' — ' + fmt(pr.price_aed_minor * it.qty); subtotal += pr.price_aed_minor * it.qty; }
       else { priceTxt = ar ? ' — السعر عند الطلب' : ' — price on request'; allPriced = false; }
-      lines.push(shown + '. ' + name + ' — ' + (pr.unit || '') + ' × ' + it.qty + priceTxt);
+      lines.push(shown + '. ' + name + ' — ' + ((ar ? (pr.unit_ar || pr.unit) : pr.unit) || '') + ' × ' + it.qty + priceTxt);
     });
     lines.push('');
     if (shown && allPriced) lines.push((ar ? 'المجموع الفرعي المعروف: ' : 'Known item subtotal: ') + fmt(subtotal) + (ar ? ' (سيتم تأكيد رسوم التوصيل والمبلغ النهائي)' : ' (delivery/final amount to be confirmed)'));
@@ -299,7 +302,7 @@
     if (!tal) return;
     var box = document.createElement('div'); box.className = 'panel'; box.style.margin = '18px 0';
     box.innerHTML = '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end">'
-      + '<div><label for="lareen-qty">' + L('Quantity', 'الكمية') + '</label><input id="lareen-qty" type="number" min="1" value="1" style="max-width:110px"></div>'
+      + '<div><label for="lareen-qty">' + L('Quantity', 'الكمية') + '</label><input id="lareen-qty" type="number" min="1" max="99" value="1" style="max-width:110px"></div>'
       + '<button class="btn" id="lareen-add" type="button">' + L('Add to bag', 'أضف إلى الحقيبة') + '</button>'
       + '<a class="btn light" id="lareen-ask" target="_blank" rel="noopener noreferrer" href="#">' + L('Ask about this sweet on WhatsApp', 'اسأل عن هذه الحلوى عبر واتساب') + '</a></div>'
       + '<p class="muted" id="lareen-added" style="display:none;margin-top:12px">' + L('Added to your bag.', 'تمت الإضافة إلى حقيبتك.') + '</p>';
@@ -307,11 +310,11 @@
     function askHref(){
       var nm = curLang() === 'ar' ? (pr.name_ar || pr.name_en) : pr.name_en;
       var prefix = curLang() === 'ar' ? 'مرحبًا حلويات لارين — البرشاء 1. أود الاستفسار عن: ' : 'Hello LaReen Sweets — Al Barsha 1. I would like to ask about: ';
-      return waLink(prefix + nm + ' — ' + (pr.unit || ''));
+      return waLink(prefix + nm + ' — ' + ((curLang() === 'ar' ? (pr.unit_ar || pr.unit) : pr.unit) || ''));
     }
     document.getElementById('lareen-ask').href = askHref();
     document.getElementById('lareen-add').addEventListener('click', function(){
-      var q = parseInt(document.getElementById('lareen-qty').value, 10); if (!(q > 0)) q = 1;
+      var q = parseInt(document.getElementById('lareen-qty').value, 10); if (!(q > 0)) q = 1; if (q > 99) q = 99;
       bagAdd(slug, q);
       document.getElementById('lareen-added').style.display = 'block';
     });
@@ -329,10 +332,10 @@
       }
       if (!values.name) { err('Please enter your name.', 'يرجى إدخال اسمك.'); return; }
       if (!values.phone) { err('Please enter your phone number.', 'يرجى إدخال رقم هاتفك.'); return; }
+      if (!/^\+?[0-9]{7,15}$/.test(values.phone.replace(/[\s\-()]/g, ''))) { err('Please enter a valid phone number.', 'يرجى إدخال رقم هاتف صحيح.'); return; }
       if (values.desired_date) {
-        var today = new Date(); today.setHours(0, 0, 0, 0);
-        var d = new Date(values.desired_date + 'T00:00:00');
-        if (d < today) { err('Please choose a date that is not in the past.', 'يرجى اختيار تاريخ ليس في الماضي.'); return; }
+        var todayDx = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dubai' }).format(new Date());
+        if (values.desired_date < todayDx) { err('Please choose a date that is not in the past.', 'يرجى اختيار تاريخ ليس في الماضي.'); return; }
       }
       var msg = buildInquiryMessage(form.getAttribute('data-wa-kind'), values);
       var box = form.querySelector('.lareen-wa-box');
@@ -343,9 +346,10 @@
         + '<button class="btn light" type="button" data-copy-btn>' + L('Copy message', 'نسخ الرسالة') + '</button>'
         + '<pre style="white-space:pre-wrap;background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:14px">' + esc(msg) + '</pre></div>';
       box.querySelector('[data-copy-btn]').addEventListener('click', function(){
-        try { navigator.clipboard.writeText(msg); } catch(err2){
-          var ta = document.createElement('textarea'); ta.value = msg; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-        }
+        var btn = this;
+        function done(){ var orig = btn.innerHTML; btn.innerHTML = L('Copied \u2713', 'تم النسخ \u2713'); setTimeout(function(){ btn.innerHTML = orig; }, 1600); }
+        function fallback(){ var ta = document.createElement('textarea'); ta.value = msg; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e2){} ta.remove(); done(); }
+        try { var prm = navigator.clipboard && navigator.clipboard.writeText(msg); if (prm && prm.then) prm.then(done, fallback); else done(); } catch(err2){ fallback(); }
       });
     });
   });
@@ -361,6 +365,7 @@
       return { fulfillment: v('bag-fulfillment'), date: v('bag-date'), name: v('bag-name'), phone: v('bag-phone'), email: v('bag-email'), gift: v('bag-gift'), notes: v('bag-notes') };
     }
     function renderBag(){
+      var ar = curLang() === 'ar';
       var bag = getBag();
       if (!bag.length) {
         itemsEl.innerHTML = '<p class="muted">' + L('Your bag is empty.', 'حقيبتك فارغة.') + '</p><p><a class="btn" href="/shop">' + L('Browse sweets', 'تصفح الحلويات') + '</a></p>';
@@ -374,23 +379,23 @@
       bag.forEach(function(it, i){
         var pr = bySlug[it.slug]; if (!pr) return;
         var priceTxt = '';
-        if (pr.price_status === 'approved_fixed' && pr.price_aed_minor != null) { priceTxt = fmt(pr.price_aed_minor * it.qty); subtotal += pr.price_aed_minor * it.qty; }
+        if (pr.price_status === 'approved_fixed' && pr.price_aed_minor != null) { priceTxt = '<bdi dir="ltr">' + fmt(pr.price_aed_minor * it.qty) + '</bdi>'; subtotal += pr.price_aed_minor * it.qty; }
         else { priceTxt = L('Price on request', 'السعر عند الطلب'); allPriced = false; }
         html += '<div class="panel" style="margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">'
           + '<img src="/images/' + esc(it.slug) + '.jpg" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px">'
-          + '<div style="flex:1;min-width:180px"><strong>' + esc(pr.name_en) + '</strong><br><span class="muted">' + esc(pr.unit || '') + ' · ' + (typeof priceTxt === 'string' && priceTxt.indexOf('<span') === 0 ? priceTxt : esc(priceTxt)) + '</span></div>'
-          + '<div style="display:flex;gap:8px;align-items:center"><button class="btn light" type="button" data-dec="' + i + '" aria-label="Decrease quantity">−</button><span>' + it.qty + '</span><button class="btn light" type="button" data-inc="' + i + '" aria-label="Increase quantity">+</button>'
+          + '<div style="flex:1;min-width:180px"><strong>' + esc(ar ? (pr.name_ar || pr.name_en) : pr.name_en) + '</strong><br><span class="muted">' + esc((ar ? (pr.unit_ar || pr.unit) : pr.unit) || '') + ' · ' + (typeof priceTxt === 'string' && priceTxt.charAt(0) === '<' ? priceTxt : esc(priceTxt)) + '</span></div>'
+          + '<div style="display:flex;gap:8px;align-items:center"><button class="btn light" type="button" data-dec="' + i + '" aria-label="' + (ar ? 'تقليل الكمية' : 'Decrease quantity') + '" data-aria-en="Decrease quantity" data-aria-ar="تقليل الكمية">−</button><span><bdi dir="ltr">' + it.qty + '</bdi></span><button class="btn light" type="button" data-inc="' + i + '" aria-label="' + (ar ? 'زيادة الكمية' : 'Increase quantity') + '" data-aria-en="Increase quantity" data-aria-ar="زيادة الكمية">+</button>'
           + '<button class="btn light" type="button" data-remove="' + i + '">' + L('Remove', 'إزالة') + '</button></div></div>';
       });
       itemsEl.innerHTML = html;
       var sum = document.getElementById('lareen-bag-summary');
       if (sum) {
         sum.innerHTML = allPriced
-          ? '<p><strong>' + L('Known item subtotal: ', 'المجموع الفرعي المعروف: ') + fmt(subtotal) + '</strong></p><p class="muted">' + L('Bakery will confirm final price, availability, and delivery charge.', 'سيؤكد المخبز السعر النهائي والتوفر ورسوم التوصيل.') + '</p>'
+          ? '<p><strong>' + L('Known item subtotal: ', 'المجموع الفرعي المعروف: ') + '<bdi dir="ltr">' + fmt(subtotal) + '</bdi></strong></p><p class="muted">' + L('Bakery will confirm final price, availability, and delivery charge.', 'سيؤكد المخبز السعر النهائي والتوفر ورسوم التوصيل.') + '</p>'
           : '<p class="muted">' + L('Some items need a quote — no total shown. The bakery will confirm the final price.', 'بعض الأصناف تحتاج عرض سعر — لا يوجد مجموع معروض. سيؤكد المخبز السعر النهائي.') + '</p>';
       }
       itemsEl.querySelectorAll('[data-dec]').forEach(function(b){ b.addEventListener('click', function(){ var bag2 = getBag(); var idx = parseInt(b.getAttribute('data-dec'), 10); bag2[idx].qty -= 1; if (bag2[idx].qty <= 0) bag2.splice(idx, 1); setBag(bag2); renderBag(); }); });
-      itemsEl.querySelectorAll('[data-inc]').forEach(function(b){ b.addEventListener('click', function(){ var bag2 = getBag(); var idx = parseInt(b.getAttribute('data-inc'), 10); bag2[idx].qty += 1; setBag(bag2); renderBag(); }); });
+      itemsEl.querySelectorAll('[data-inc]').forEach(function(b){ b.addEventListener('click', function(){ var bag2 = getBag(); var idx = parseInt(b.getAttribute('data-inc'), 10); if (bag2[idx].qty < 99) bag2[idx].qty += 1; setBag(bag2); renderBag(); }); });
       itemsEl.querySelectorAll('[data-remove]').forEach(function(b){ b.addEventListener('click', function(){ var bag2 = getBag(); bag2.splice(parseInt(b.getAttribute('data-remove'), 10), 1); setBag(bag2); renderBag(); }); });
       refreshSend();
     }
@@ -412,9 +417,10 @@
       if (!getBag().length) { fail('Your bag is empty.', 'حقيبتك فارغة.'); return; }
       if (!f.name) { fail('Please enter your name.', 'يرجى إدخال اسمك.'); return; }
       if (!f.phone) { fail('Please enter your phone number.', 'يرجى إدخال رقم هاتفك.'); return; }
+      if (!/^\+?[0-9]{7,15}$/.test(f.phone.replace(/[\s\-()]/g, ''))) { fail('Please enter a valid phone number.', 'يرجى إدخال رقم هاتف صحيح.'); return; }
       if (f.date) {
-        var today = new Date(); today.setHours(0, 0, 0, 0);
-        if (new Date(f.date + 'T00:00:00') < today) { fail('Please choose a date that is not in the past.', 'يرجى اختيار تاريخ ليس في الماضي.'); return; }
+        var todayDx = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dubai' }).format(new Date());
+        if (f.date < todayDx) { fail('Please choose a date that is not in the past.', 'يرجى اختيار تاريخ ليس في الماضي.'); return; }
       }
       refreshSend();
     });
@@ -426,8 +432,9 @@
     var rail = document.getElementById('lareen-cat-rail');
     if (!rail) return;
     var prev = document.querySelector('.cat-rail-prev'), next = document.querySelector('.cat-rail-next');
-    if (prev) prev.addEventListener('click', function(){ rail.scrollBy({left: -270, behavior: 'smooth'}); });
-    if (next) next.addEventListener('click', function(){ rail.scrollBy({left: 270, behavior: 'smooth'}); });
+    var rs = document.documentElement.dir === 'rtl' ? -1 : 1;
+    if (prev) prev.addEventListener('click', function(){ rail.scrollBy({left: -270 * rs, behavior: 'smooth'}); });
+    if (next) next.addEventListener('click', function(){ rail.scrollBy({left: 270 * rs, behavior: 'smooth'}); });
   })();
 
   /* ---------- Premium mobile order bar ---------- */
