@@ -75,7 +75,7 @@ html[dir="rtl"] .story-imgs .story-img-small{right:auto;left:0}
 /* Clean-page guard: never let any element widen the page sideways (clip, not hidden, so the sticky header keeps working) */
 html,body{overflow-x:clip}
 /* Slider fix 2026-11-02: one slide at a time, sized images, positioned caption/arrows/dots */
-.hero-slider{position:relative;max-width:720px;margin:0 auto}
+.hero-slider{position:relative;max-width:1000px;margin:0 auto}
 .hero-track{position:relative}
 .hero-slide{display:none;width:100%}
 .hero-slide.is-active{display:block}
