@@ -53,7 +53,8 @@
     if (panels.length) { var np = panels[0].nextElementSibling; if (np && np.tagName==='P') countP = np; }
     var shopPage = 1, shopPager = null;
     function shopFiltered(){
-      var cat = catSel.value, typ = typSel ? typSel.value : 'all';
+      var catOpt = catSel ? catSel.options[catSel.selectedIndex] : null;
+      var cat = catOpt ? (catOpt.getAttribute('data-en') || catSel.value) : 'All', typ = typSel ? typSel.value : 'all';
       var minv = minEl && minEl.value!=='' ? parseFloat(minEl.value) : null;
       var maxv = maxEl && maxEl.value!=='' ? parseFloat(maxEl.value) : null;
       var feat = featEl ? featEl.checked : false;
@@ -104,6 +105,19 @@
       if (shopPager) renderPager(shopPager, pages, shopPage, function(p){ shopPage = p; renderShop(); scrollToGrid(cards); });
     }
     [catSel, typSel, minEl, maxEl, featEl, incEnqEl, sortSel].forEach(function(el){ if(el) el.addEventListener('input', function(){ shopPage = 1; renderShop(); }); if(el) el.addEventListener('change', function(){ shopPage = 1; renderShop(); }); });
+    /* Deep links: honour ?category=&type=&sort=&min=&max=&inc-enq= on direct load.
+       Category matches the option's data-en (language-independent) after norm(),
+       so ?category=Baklawa and ?category=baklava both land on Baklawa, in EN or AR. */
+    try {
+      var _q = new URLSearchParams(window.location.search);
+      var _cat = _q.get('category');
+      if (_cat) { var _want = norm(_cat); for (var _i = 0; _i < catSel.options.length; _i++) { var _o = catSel.options[_i]; if (norm(_o.getAttribute('data-en') || _o.textContent) === _want) { catSel.selectedIndex = _i; break; } } }
+      var _typ = _q.get('type'); if (_typ && typSel) { var _tv = _typ.toLowerCase(); if (['all','fixed','enquiry'].indexOf(_tv) !== -1) typSel.value = _tv; }
+      var _sort = _q.get('sort'); if (_sort && sortSel) { var _sv = _sort.toLowerCase(); if (['featured','price-asc','price-desc','name-asc'].indexOf(_sv) !== -1) sortSel.value = _sv; }
+      var _min = parseFloat(_q.get('min')); if (!isNaN(_min) && minEl) minEl.value = _min;
+      var _max = parseFloat(_q.get('max')); if (!isNaN(_max) && maxEl) maxEl.value = _max;
+      if (_q.get('inc-enq') === '1' && incEnqEl) incEnqEl.checked = true;
+    } catch(e){}
     renderShop();
   }
 
@@ -309,7 +323,11 @@
       + '<button class="btn" id="lareen-add" type="button">' + L('Add to bag', 'أضف إلى الحقيبة') + '</button>'
       + '<a class="btn light" id="lareen-ask" target="_blank" rel="noopener noreferrer" href="#">' + L('Ask about this sweet on WhatsApp', 'اسأل عن هذه الحلوى عبر واتساب') + '</a></div>'
       + '<p class="muted" id="lareen-added" style="display:none;margin-top:12px">' + L('Added to your bag.', 'تمت الإضافة إلى حقيبتك.') + '</p>';
-    tal.before(box);
+    /* Panel goes BEFORE the pills row, not inside it: as a flex item sharing the
+       row, the tall panel stretched the Delivery/Call pills (align-items:stretch)
+       into tall ovals. As a block above the row, pills keep their natural height. */
+    var _row = tal.parentElement;
+    if (_row && _row.tagName === 'P' && _row.parentElement) _row.parentElement.insertBefore(box, _row); else tal.before(box);
     function askHref(){
       var nm = curLang() === 'ar' ? (pr.name_ar || pr.name_en) : pr.name_en;
       var prefix = curLang() === 'ar' ? 'مرحبًا حلويات لارين — البرشاء 1. أود الاستفسار عن: ' : 'Hello LaReen Sweets — Al Barsha 1. I would like to ask about: ';
