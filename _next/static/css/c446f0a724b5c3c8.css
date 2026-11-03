@@ -85,4 +85,22 @@ html,body{overflow-x:clip}
 .hero-prev{left:12px}
 .hero-next{right:12px}
 @media(min-width:701px){.hero-dots{display:flex;gap:8px;justify-content:center;margin-top:12px}.hero-dots button{background:none;border:0;padding:6px;cursor:pointer}.hero-dots button i{display:block;width:10px;height:10px;border-radius:50%;background:#D8CDBF}.hero-dots button[aria-current="true"] i{background:#B99B70}}
-@media(min-width:701px){.nav{gap:20px;padding:14px 24px}.navlinks{flex:1 1 auto;justify-content:flex-end;margin-inline-start:0;-webkit-margin-start:0;gap:20px}.navlinks a{font-weight:400;color:#6B5B4E}.navlinks a.nav-sign{padding:6px 11px}.langbtn{border:0;background:transparent;padding:7px 4px;font-weight:500}.langbtn:hover{color:var(--gold)}.header-actions{display:flex;gap:14px;align-items:center;margin-inline-start:auto}}.order-pills .btn{display:inline-flex;align-items:center;gap:9px}.order-pills .btn img{height:22px;width:auto;flex:none}.wa-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;flex:none;border-radius:50%;background:#25D366;transition:background 180ms ease}.wa-btn:hover{background:#1EBE5D}.wa-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.wa-btn svg{width:24px;height:24px;flex:none}
+@media(min-width:701px){.nav{gap:20px;padding:14px 24px}.navlinks{flex:1 1 auto;justify-content:flex-end;margin-inline-start:0;-webkit-margin-start:0;gap:20px}.navlinks a{font-weight:400;color:#6B5B4E}.navlinks a.nav-sign{padding:6px 11px}.langbtn{border:0;background:transparent;padding:7px 4px;font-weight:500}.langbtn:hover{color:var(--gold)}.header-actions{display:flex;gap:14px;align-items:center;margin-inline-start:auto}}.order-pills .btn{display:inline-flex;align-items:center;gap:9px}.order-pills .btn img{height:22px;width:auto;flex:none}.wa-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;flex:none;border-radius:50%;background:#6B5B4E;transition:background 180ms ease}.wa-btn:hover{background:#59493D}.wa-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.wa-btn svg{width:24px;height:24px;flex:none}
+/* PREMIUM POLISH (2026-11-03): pager, buttons, cards, footer, inputs, focus — no layout geometry changes */
+.lareen-pager{align-items:center;gap:6px;flex-wrap:wrap;margin-top:24px}
+.lareen-pager button{appearance:none;background:transparent;border:1px solid transparent;border-radius:999px;min-width:38px;height:38px;padding:0 12px;font:inherit;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:background-color 180ms ease,color 180ms ease,border-color 180ms ease}
+.lareen-pager button:hover{border-color:var(--border);color:var(--espresso);background:var(--ivory)}
+.lareen-pager button[aria-current="page"]{background:var(--espresso);color:#fff;border-color:var(--espresso);font-weight:700}
+.lareen-pager button:disabled{opacity:.35;cursor:default}
+.lareen-pager button:disabled:hover{border-color:transparent;background:transparent;color:var(--muted)}
+.lareen-pager-info{margin-inline-start:8px;font-size:13px;color:var(--muted)}
+.btn{border-radius:999px;transition:filter 180ms ease,transform 180ms ease,background-color 180ms ease,color 180ms ease,border-color 180ms ease}
+.card .btn.light:hover{background:var(--espresso);color:#fff!important;border-color:var(--espresso)}
+.card{transition:transform .2s ease-out,border-color .2s ease-out,box-shadow .2s ease-out}
+.card:hover{box-shadow:0 10px 28px rgba(53,40,32,.10)}
+footer.site{padding:56px 0;margin-top:56px}
+footer.site a{transition:color 180ms ease}
+footer.site a:hover{color:var(--gold)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(185,155,112,.25)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+::selection{background:rgba(185,155,112,.35);color:var(--espresso)}
