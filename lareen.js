@@ -9,6 +9,9 @@
   function setLS(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
   var PRODUCTS = window.LAREEN_PRODUCTS || [];
   var bySlug = {}; PRODUCTS.forEach(function(p){ bySlug[p.slug]=p; });
+  /* Purge saved-bag items whose slug no longer exists in the catalogue, so the
+     badge count never includes items the bag display and message skip. */
+  try { var _rawBag = JSON.parse(localStorage.getItem('lareen-bag') || '[]'); if (Array.isArray(_rawBag)) { var _cleanBag = _rawBag.filter(function(i){ return i && bySlug[i.slug]; }); if (_cleanBag.length !== _rawBag.length) localStorage.setItem('lareen-bag', JSON.stringify(_cleanBag)); } } catch(e){}
 
 
   /* ---------- Pagination: 12 products per page, everywhere products are listed ---------- */
@@ -84,7 +87,7 @@
         priced.sort(function(a, b){ var pa = bySlug[(a.querySelector('a')||a).getAttribute('href').split('/').pop()].price_aed_minor, pb = bySlug[(b.querySelector('a')||b).getAttribute('href').split('/').pop()].price_aed_minor; return sortMode === 'price-asc' ? pa - pb : pb - pa; });
         list = priced.concat(unpriced);
       } else if (sortMode === 'name-asc') {
-        list = list.slice().sort(function(a, b){ var pa = bySlug[((a.querySelector('a')||a).getAttribute('href')||'').split('/').pop()], pb = bySlug[((b.querySelector('a')||b).getAttribute('href')||'').split('/').pop()]; return (pa ? pa.name_en : '').localeCompare(pb ? pb.name_en : ''); });
+        list = list.slice().sort(function(a, b){ var pa = bySlug[((a.querySelector('a')||a).getAttribute('href')||'').split('/').pop()], pb = bySlug[((b.querySelector('a')||b).getAttribute('href')||'').split('/').pop()]; var ar = curLang()==='ar'; var na = pa ? (ar ? (pa.name_ar || pa.name_en) : pa.name_en) : ''; var nb = pb ? (ar ? (pb.name_ar || pb.name_en) : pb.name_en) : ''; return na.localeCompare(nb, ar ? 'ar' : 'en'); });
       } else if (sortMode === 'featured') {
         list = list.slice().sort(function(a, b){ var pa = bySlug[((a.querySelector('a')||a).getAttribute('href')||'').split('/').pop()], pb = bySlug[((b.querySelector('a')||b).getAttribute('href')||'').split('/').pop()]; return ((pb && pb.featured ? 1 : 0) - (pa && pa.featured ? 1 : 0)); });
       }
