@@ -108,3 +108,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 .hero{background:#fff}
 
 .hero-slide video{aspect-ratio:1/1;object-fit:cover;background:#fff}
+
+.lareen-back{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1px solid #E8DFD3;border-radius:999px;background:transparent;color:#2B211C;font:inherit;font-size:14px;font-weight:600;letter-spacing:.01em;cursor:pointer;white-space:nowrap;transition:border-color 160ms ease,background-color 160ms ease}
+.lareen-back:hover{border-color:#B99B70;background:#F7F3EC}
+.lareen-back:focus-visible{outline:2px solid #B99B70;outline-offset:2px}
+.lareen-back-arrow{display:inline-block;color:#B99B70;font-size:18px;line-height:1;transform:translateY(-1px)}
+html[dir="rtl"] .lareen-back-arrow{transform:scaleX(-1) translateY(-1px)}
+@media(max-width:560px){.lareen-back{padding:0 11px}.lareen-back-label{display:none}}

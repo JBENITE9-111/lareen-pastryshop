@@ -497,3 +497,28 @@
     nodes.filter(function(el){ return !el.classList.contains('is-visible'); }).forEach(function(el){ observer.observe(el); });
   })();
 })();
+(function(){
+  var headerActions = document.querySelector('.header-actions');
+  if (!headerActions || document.querySelector('.lareen-back')) return;
+  var backBtn = document.createElement('button');
+  backBtn.className = 'lareen-back';
+  backBtn.type = 'button';
+  backBtn.setAttribute('data-aria-en', 'Go back');
+  backBtn.setAttribute('data-aria-ar', 'العودة إلى الصفحة السابقة');
+  var backArrow = document.createElement('span');
+  backArrow.className = 'lareen-back-arrow';
+  backArrow.setAttribute('aria-hidden', 'true');
+  backArrow.textContent = '‹';
+  var backLabel = document.createElement('span');
+  backLabel.className = 'lareen-back-label';
+  backLabel.setAttribute('data-en', 'Back');
+  backLabel.setAttribute('data-ar', 'عودة');
+  backLabel.textContent = 'Back';
+  backBtn.appendChild(backArrow);
+  backBtn.appendChild(backLabel);
+  backBtn.addEventListener('click', function(){
+    if (window.history.length > 1) { window.history.back(); }
+    else { window.location.href = '/'; }
+  });
+  headerActions.insertBefore(backBtn, headerActions.firstChild);
+})();
