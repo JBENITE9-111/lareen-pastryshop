@@ -498,6 +498,8 @@
   })();
 })();
 (function(){
+  var backHomePath = window.location.pathname;
+  if (backHomePath === '/' || backHomePath === '/index.html') return;
   var headerActions = document.querySelector('.header-actions');
   if (!headerActions || document.querySelector('.lareen-back')) return;
   var backBtn = document.createElement('button');
