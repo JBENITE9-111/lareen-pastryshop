@@ -517,7 +517,10 @@
   backBtn.appendChild(backArrow);
   backBtn.appendChild(backLabel);
   backBtn.addEventListener('click', function(){
-    if (window.history.length > 1) { window.history.back(); }
+    var backPath = window.location.pathname;
+    if (backPath === '/' || backPath === '/index.html') return;
+    var backRef = document.referrer || '';
+    if (window.history.length > 1 && backRef.indexOf(window.location.origin + '/') === 0) { window.history.back(); }
     else { window.location.href = '/'; }
   });
   headerActions.insertBefore(backBtn, headerActions.firstChild);
