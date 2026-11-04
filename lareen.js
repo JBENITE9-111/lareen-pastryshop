@@ -182,11 +182,26 @@
     var heroDots = Array.prototype.slice.call(heroSlider.querySelectorAll('.hero-dots button'));
     var heroCur = 0, heroTimer = null;
     var heroCount = heroSlider.querySelector('.hero-count');
+    var heroVideo = document.getElementById('hero-video');
+    var heroReducedMotion = false;
+    try { heroReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    function heroPlayVideo(){
+      if (!heroVideo || heroReducedMotion) return;
+      if (heroSlides[heroCur] !== heroVideo.parentNode) return;
+      heroVideo.muted = true;
+      var heroPlayPromise = heroVideo.play();
+      if (heroPlayPromise && heroPlayPromise.catch) heroPlayPromise.catch(function(){});
+    }
+    if (heroVideo) {
+      heroVideo.addEventListener('canplay', heroPlayVideo);
+      heroVideo.addEventListener('pause', function(){ if (!heroVideo.ended) heroPlayVideo(); });
+    }
     function heroGo(n){
       heroSlides[heroCur].classList.remove('is-active'); heroDots[heroCur].removeAttribute('aria-current');
       heroCur = (n + heroSlides.length) % heroSlides.length;
       heroSlides[heroCur].classList.add('is-active'); heroDots[heroCur].setAttribute('aria-current','true');
       if (heroCount) heroCount.textContent = ('0' + (heroCur + 1)).slice(-2) + ' / ' + ('0' + heroSlides.length).slice(-2);
+      heroPlayVideo();
     }
     function heroAuto(){ clearInterval(heroTimer); /* manual slider: no autoplay */ }
     heroSlider.querySelector('.hero-prev').addEventListener('click', function(){ heroGo(heroCur-1); heroAuto(); });
@@ -203,6 +218,7 @@
     heroSlider.addEventListener('mouseenter', function(){ clearInterval(heroTimer); });
     heroSlider.addEventListener('mouseleave', heroAuto);
     heroAuto();
+    heroPlayVideo();
   }
 
   /* ---------- WhatsApp bag + inquiry builders ---------- */
