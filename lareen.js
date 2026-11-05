@@ -1,7 +1,7 @@
 
 (function(){
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function L(en, ar){ return '<span data-en="'+esc(en)+'" data-ar="'+esc(ar)+'">'+esc(en)+'</span>'; }
+  function L(en, ar){ var _ar = (function(){ try { var _p = window.location.pathname; return _p === '/ar' || _p.indexOf('/ar/') === 0; } catch(e){ return false; } })(); return '<span data-en="'+esc(en)+'" data-ar="'+esc(ar)+'">'+esc(_ar ? ar : en)+'</span>'; }
   function stLabel(st){ return st==='approved' ? L('approved','موافق عليه') : L('pending','قيد الانتظار'); }
   function norm(s){ return String(s||'').toLowerCase().replace(/baklava/g,'baklawa').replace(/pastachio/g,'pistachio').replace(/konafa/g,'kunafa').replace(/knafeh/g,'kunafa').replace(/ghoriba/g,'ghorayeba').replace(/[^a-z0-9\u0600-\u06FF ]/g,' ').replace(/\s+/g,' ').trim(); }
   function fmt(minor){ var v = minor/100; return 'AED ' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2)); }
@@ -16,6 +16,22 @@
 
   /* ---------- Pagination: 12 products per page, everywhere products are listed ---------- */
   var PAGE_SIZE = 12;
+
+  function pageHref(p){
+    try {
+      var u = new URL(window.location.href);
+      if (p <= 1) u.searchParams.delete('page'); else u.searchParams.set('page', String(p));
+      return u.pathname + (u.search ? u.search : '') + (u.hash ? u.hash : '');
+    } catch(e){ return '?page=' + p; }
+  }
+  function readPageParam(){
+    try { var _p = parseInt(new URLSearchParams(window.location.search).get('page')); return (!isNaN(_p) && _p >= 1) ? _p : 1; } catch(e){ return 1; }
+  }
+  function syncPageUrl(page){
+    if (_pagerNav) return;
+    try { var u = pageHref(page); var cur = window.location.pathname + window.location.search; if (u !== cur) history.replaceState(null, '', u); } catch(e){}
+  }
+  var _pagerNav = false;
   function scrollToGrid(cards){ var g = cards.length && cards[0].parentElement; if (!g) return; var hdr = document.querySelector('header.site'); var off = (hdr ? hdr.offsetHeight : 80) + 12; var top = g.getBoundingClientRect().top + window.scrollY - off; window.scrollTo({top: top < 0 ? 0 : top, behavior: 'smooth'}); }
   function makePager(anchor){
     var nav = document.getElementById('lareen-pager');
@@ -25,16 +41,16 @@
   function renderPager(nav, totalPages, page, onPage){
     if (totalPages <= 1) { nav.style.display = 'none'; nav.innerHTML = ''; return; }
     nav.style.display = 'flex'; nav.innerHTML = '';
-    function btn(label, p, disabled, current){
-      var b = document.createElement('button'); b.type = 'button'; b.innerHTML = label;
-      if (disabled) b.disabled = true;
-      if (current) b.setAttribute('aria-current','page');
-      b.addEventListener('click', function(){ onPage(p); });
-      nav.appendChild(b);
+    function pageLink(label, p, disabled, current){
+      if (disabled) { var s = document.createElement('span'); s.innerHTML = label; s.setAttribute('aria-disabled','true'); nav.appendChild(s); return; }
+      var a = document.createElement('a'); a.href = pageHref(p); a.innerHTML = label;
+      if (current) a.setAttribute('aria-current','page');
+      a.addEventListener('click', function(ev){ ev.preventDefault(); _pagerNav = true; onPage(p); _pagerNav = false; try { var _u = pageHref(p); if (_u !== window.location.pathname + window.location.search) history.pushState(null, '', _u); } catch(e){} });
+      nav.appendChild(a);
     }
-    btn(L('\u2039 Prev', 'السابق \u203a'), page - 1, page <= 1, false);
-    for (var p = 1; p <= totalPages; p++) btn(String(p), p, false, p === page);
-    btn(L('Next \u203a', '\u2039 التالي'), page + 1, page >= totalPages, false);
+    pageLink(L('\u2039 Prev', 'السابق \u203a'), page - 1, page <= 1, false);
+    for (var p = 1; p <= totalPages; p++) pageLink(String(p), p, false, p === page);
+    pageLink(L('Next \u203a', '\u2039 التالي'), page + 1, page >= totalPages, false);
     var info = document.createElement('span'); info.className = 'lareen-pager-info'; info.innerHTML = L('Page ' + page + ' of ' + totalPages, 'صفحة ' + page + ' من ' + totalPages); nav.appendChild(info);
   }
   /* ---------- Shop filters ---------- */
@@ -51,7 +67,7 @@
     // count paragraph is the <p> right after the filter panel
     var panels = document.querySelectorAll('.panel');
     if (panels.length) { var np = panels[0].nextElementSibling; if (np && np.tagName==='P') countP = np; }
-    var shopPage = 1, shopPager = null;
+    var shopPage = readPageParam(), shopPager = null;
     function shopFiltered(){
       var catOpt = catSel ? catSel.options[catSel.selectedIndex] : null;
       var cat = catOpt ? (catOpt.getAttribute('data-en') || catSel.value) : 'All', typ = typSel ? typSel.value : 'all';
@@ -81,6 +97,7 @@
       var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
       if (shopPage > pages) shopPage = pages;
       if (shopPage < 1) shopPage = 1;
+      syncPageUrl(shopPage);
       var sortMode = sortSel ? sortSel.value : 'featured';
       if (sortMode === 'price-asc' || sortMode === 'price-desc') {
         var priced = list.filter(function(card){ var pp = bySlug[((card.querySelector('a')||card).getAttribute('href')||'').split('/').pop()]; return pp && pp.price_status === 'approved_fixed' && pp.price_aed_minor != null; });
@@ -119,6 +136,7 @@
       if (_q.get('inc-enq') === '1' && incEnqEl) incEnqEl.checked = true;
     } catch(e){}
     renderShop();
+    window.addEventListener('popstate', function(){ var _p = readPageParam(); if (_p !== shopPage) { shopPage = _p; renderShop(); } });
   }
 
   /* ---------- Search ---------- */
@@ -127,7 +145,7 @@
     var scards = Array.prototype.slice.call(document.querySelectorAll('article.card, a.card'));
     var sCount = null;
     document.querySelectorAll('p').forEach(function(p){ if (/results\.$/.test(p.textContent.trim())) sCount = p; });
-    var searchPage = 1, searchPager = null;
+    var searchPage = readPageParam(), searchPager = null;
     function renderSearch(){
       var nq = norm(qEl.value);
       var list = scards.filter(function(card){
@@ -141,6 +159,7 @@
       var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
       if (searchPage > pages) searchPage = pages;
       if (searchPage < 1) searchPage = 1;
+      syncPageUrl(searchPage);
       var start = (searchPage - 1) * PAGE_SIZE, end = Math.min(total, start + PAGE_SIZE);
       var visible = {};
       list.slice(start, end).forEach(function(card){ visible[(card.querySelector('a')||card).getAttribute('href')] = true; });
@@ -151,6 +170,7 @@
     }
     qEl.addEventListener('input', function(){ searchPage = 1; renderSearch(); });
     renderSearch();
+    window.addEventListener('popstate', function(){ var _p = readPageParam(); if (_p !== searchPage) { searchPage = _p; renderSearch(); } });
   }
 
   /* ---------- Collections & occasions: same 12-per-page rule ---------- */
@@ -159,12 +179,13 @@
     if (path.indexOf('/collections/') !== 0 && path.indexOf('/occasions/') !== 0) return;
     var ccards = Array.prototype.slice.call(document.querySelectorAll('article.card, a.card'));
     if (!ccards.length) return;
-    var cPage = 1, cPager = null, cCount = null;
+    var cPage = readPageParam(), cPager = null, cCount = null;
     function renderCollection(){
       var total = ccards.length;
       var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
       if (cPage > pages) cPage = pages;
       if (cPage < 1) cPage = 1;
+      syncPageUrl(cPage);
       var start = (cPage - 1) * PAGE_SIZE, end = Math.min(total, start + PAGE_SIZE);
       if (!cCount) { cCount = document.createElement('p'); cCount.id = 'lareen-page-count'; ccards[0].parentElement.before(cCount); }
       cCount.innerHTML = L('Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' products.', 'عرض ' + (start + 1) + '\u2013' + end + ' من أصل ' + total + ' منتجًا.');
@@ -173,6 +194,7 @@
       renderPager(cPager, pages, cPage, function(p){ cPage = p; renderCollection(); scrollToGrid(ccards); });
     }
     renderCollection();
+    window.addEventListener('popstate', function(){ var _p = readPageParam(); if (_p !== cPage) { cPage = _p; renderCollection(); } });
   })();
 
   /* ---------- Hero slider: 10 product slides, auto + swipe + dots ---------- */
@@ -185,8 +207,10 @@
     var heroVideo = document.getElementById('hero-video');
     var heroReducedMotion = false;
     try { heroReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    var heroUserPaused = false, heroDeactivating = false;
     function heroPlayVideo(){
       if (!heroVideo || heroReducedMotion) return;
+      if (heroUserPaused) return;
       if (heroSlides[heroCur] !== heroVideo.parentNode) return;
       heroVideo.muted = true;
       var heroPlayPromise = heroVideo.play();
@@ -194,9 +218,13 @@
     }
     if (heroVideo) {
       heroVideo.addEventListener('canplay', heroPlayVideo);
-      heroVideo.addEventListener('pause', function(){ if (!heroVideo.ended) heroPlayVideo(); });
+      heroVideo.addEventListener('play', function(){ heroUserPaused = false; });
+      heroVideo.addEventListener('pause', function(){ if (heroVideo.ended) return; if (heroDeactivating) { heroDeactivating = false; return; } if (document.hidden) return; heroUserPaused = true; });
+      document.addEventListener('visibilitychange', function(){ if (!document.hidden) heroPlayVideo(); });
+      if ('IntersectionObserver' in window) { new IntersectionObserver(function(es){ es.forEach(function(en){ if (en.isIntersecting) heroPlayVideo(); else if (heroVideo && !heroVideo.paused) { heroDeactivating = true; heroVideo.pause(); } }); }).observe(heroSlider); }
     }
     function heroGo(n){
+      if (heroVideo && heroSlides[heroCur] === heroVideo.parentNode) { heroUserPaused = false; if (!heroVideo.paused) { heroDeactivating = true; heroVideo.pause(); } }
       heroSlides[heroCur].classList.remove('is-active'); heroDots[heroCur].removeAttribute('aria-current');
       heroCur = (n + heroSlides.length) % heroSlides.length;
       heroSlides[heroCur].classList.add('is-active'); heroDots[heroCur].setAttribute('aria-current','true');
@@ -224,7 +252,7 @@
   /* ---------- WhatsApp bag + inquiry builders ---------- */
   var WA_URL = 'https://wa.me/971563220110';
   function waLink(text){ return WA_URL + '?text=' + encodeURIComponent(text); }
-  function curLang(){ try { return localStorage.getItem('lareen-lang') || 'en'; } catch(e){ return 'en'; } }
+  function curLang(){ try { var _p = window.location.pathname; if (_p === '/ar' || _p.indexOf('/ar/') === 0) return 'ar'; return localStorage.getItem('lareen-lang') || 'en'; } catch(e){ return 'en'; } }
   function getBag(){ try { var b = JSON.parse(localStorage.getItem('lareen-bag') || '[]'); return Array.isArray(b) ? b : []; } catch(e){ return []; } }
   function bagCount(){ return getBag().reduce(function(n, i){ return n + (parseInt(i.qty, 10) || 0); }, 0); }
   function updateBagBadges(){
@@ -436,6 +464,8 @@
       itemsEl.querySelectorAll('[data-remove]').forEach(function(b){ b.addEventListener('click', function(){ var bag2 = getBag(); bag2.splice(parseInt(b.getAttribute('data-remove'), 10), 1); setBag(bag2); renderBag(); }); });
       refreshSend();
     }
+    var _lt = document.getElementById('lang-toggle');
+    if (_lt && _lt.tagName === 'BUTTON') _lt.addEventListener('click', function(){ setTimeout(renderBag, 0); });
     function refreshSend(){
       if (!sendA) return;
       var f = formVals();
@@ -499,7 +529,7 @@
 })();
 (function(){
   var backHomePath = window.location.pathname;
-  if (backHomePath === '/' || backHomePath === '/index.html') return;
+  if (backHomePath === '/' || backHomePath === '/index.html' || backHomePath === '/ar' || backHomePath === '/ar/index.html') return;
   var headerActions = document.querySelector('.header-actions');
   if (!headerActions || document.querySelector('.lareen-back')) return;
   var backBtn = document.createElement('button');
@@ -515,15 +545,15 @@
   backLabel.className = 'lareen-back-label';
   backLabel.setAttribute('data-en', 'Back');
   backLabel.setAttribute('data-ar', 'عودة');
-  backLabel.textContent = 'Back';
+  backLabel.textContent = (window.location.pathname === '/ar' || window.location.pathname.indexOf('/ar/') === 0) ? 'عودة' : 'Back';
   backBtn.appendChild(backArrow);
   backBtn.appendChild(backLabel);
   backBtn.addEventListener('click', function(){
     var backPath = window.location.pathname;
-    if (backPath === '/' || backPath === '/index.html') return;
+    if (backPath === '/' || backPath === '/index.html' || backPath === '/ar' || backPath === '/ar/index.html') return;
     var backRef = document.referrer || '';
     if (window.history.length > 1 && backRef.indexOf(window.location.origin + '/') === 0) { window.history.back(); }
-    else { window.location.href = '/'; }
+    else { var _bp = window.location.pathname; window.location.href = (_bp === '/ar' || _bp.indexOf('/ar/') === 0) ? '/ar' : '/'; }
   });
   headerActions.insertBefore(backBtn, headerActions.firstChild);
 })();
